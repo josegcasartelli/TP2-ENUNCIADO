@@ -105,7 +105,7 @@ Carateristicas:
 	- menu_ejecutar(menu, tecla)
 		Busca la opción con esa tecla y ejecuta su acción
 
-###Juego de memoria###
+### Juego de memoria
 
 El juego usa:
 
@@ -172,7 +172,7 @@ Decision tomada:
 Se separa la lectura de archivo TP1 de la estructura final (pokédex).  Así, el TP2 no depende de cómo se parseo el csv, solo de los pokemon ya construidos.
 
 b) Buscar pokemon
-	- Primero se verifica si hay pokédex cargada.  Si no la hay, 
+ - Primero se verifica si hay pokédex cargada.  Si no la hay, 
 muestra un mensaje y se vuelve al menú
 
 - Se entra a un submenú de búsqueda:
@@ -231,8 +231,8 @@ e) Salir
 ### 3. Flujo detallado del juego de memoria
 
 Cuando el usuario elige:
-	- J: se llama a juego_jugar(contexto->pokedex) con una semilla basada en la hora
-	- S: Se pide una semilla al usuario y se llama a juego_jugar_con_semilla
+ - J: se llama a juego_jugar(contexto->pokedex) con una semilla basada en la hora
+ - S: Se pide una semilla al usuario y se llama a juego_jugar_con_semilla
 
 a) Preparación del mazo
 
@@ -329,13 +329,80 @@ Finalmente, se libera toda la memoria usada en el juego:
 
 
 ## Respuestas a las preguntas teóricas
-Incluír acá las respuestas a las preguntas del enunciado (si aplica).
-
-Explicar los siguientes puntos (no necesariamente en orden, pero por favor usando diagramas):
-
-   - ¿Qué TDAs fueron utilizados para implementar las funcionalidades pedidas? ¿Por qué fue elegido ese TDA y no otro?
-   - Explicar el TDA menú. Justifique las operaciones incluídas en el TDA.
-   - Explicar cualquier otro TDA o estructuras auxiliares implementadas.
-   - Explique qué dificultades encontró al implementar el TP2 y cómo pudo solucionarlas.
 
 
+### TDAs utilizados
+
+
+**Hash**
+
+Se utilizó un hash para la búsqueda por nombre en la pokédex.  Esto permite búsquedas en tiempo promedio O(1) y el nombre del pokémon es una clave natural por ser string.  Resulta más adecuado que una lista por ejemplo que tiene búsqueda en tiempo O(n) y a la vez es más rápido que un ABB.
+
+
+**ABB por ID**
+
+Se usa un ABB donde la clave es el campo id del pokemon.  Esto permite buscar por id en tiempo O(1) y recorrer en orden creciente con un recorrido inorden.  Esto evita tener que ordenar vectores cada vez que se quieran mostrar los pokémons ordenados por id.
+
+
+**ABB por nombre**
+
+Similar al anterior, pero comparando por nombre.  Se usa exclusivamente para mostrar los pokémon ordenados alfabeticamente.  Es más rápido que las demás estructuras y de nuevo, el recorrido inorden da la salida ordenada sin costos extra.
+
+
+**Lista + Cola**
+
+La cola se implementa sobre la lista.  Se usa para almacenar las últimas 5 jugadas del juego en memoria, donde la regla FIFO encaja naturalmente con el requisito de "últimas jugadas".
+
+
+### TDA menu
+
+
+El TDA menu_t modela un menú genérico, independiente del tp2:
+Almacena:
+    - un titulo
+    - un arreglo de operaciones, cada una con tecla, texto y puntero a función
+    - un puntero void* contexto que se pasa a todas las acciones
+Operaciones:
+    - menu_crear() construye el menu copiando titulo y opciones, y guarda el contexto
+    - menu_mostrar() recorre las opciones y llama a un callback de dibujo.  El menú no decide cómo se imprime, eso queda fuera del TDA.
+    - menu_ejecutar() busca la opción cuya tecla coincide y ejecuta la acción asociada, devolviendo true o false según haya encontrado o no.
+    - menu_destruir() libera todos los recursos asociados
+
+
+Con este diseño el menú es reutilizable.  No conoce estilos, ni teclas especiales, ni que se trata de pokemon.  Solo administra opciones y delega la presentación y la lógica a otros módulos.
+
+
+### Otras estructuras auxiliares
+
+
+pokedex_t: es la estructura "principal" sobre la que trabaja el TP2, pero a la vez funciona como un TDA compuesto, que agrupa otros TDAs:
+    - Un hash que usa como claves los nombres de los pokemon
+    - Un ABB ordenado por ID, usado para buscar por ID y mostrar por ID en orden creciente
+    - Un ABB ordenado por nombre, usado para mostrar ordenado alfabeticamente
+
+
+La pokédex no copia los pokemon, solo guarda punteros en cada TDA.  Al destruirla, primero destruye los ABB (sin liberar los pokemon) y finalmente destruye el hash con un destructor que libera el struct pokemon y su nombre.  De esa forma hay un único punto de destrucción y no se producen dobles free
+
+
+carta_t: representa una carta del tablero. Guarda un puntero a struct pokemon y un booleano eliminado.  Las dos cartas de una misma pareja comparten el mismo puntero
+
+
+jugada_t: representa una jugada de un jugador (número de jugador, posiciones elegidas, punteros a los pokémon levantados y si fue acierto o fallo).  Se guarda en el vector de historial y en la cola de últimas jugadas.
+
+
+coleccion_pokemones_t: estructura interna para acumular punteros a pokemon al recorrer la pokedex con el iterador interno.  Se usa solo durante la preparación del mazo y luego se libera.
+
+
+En todos los casos, estas estructuras comparten punteros a struct pokémon con la pokédex, sin duplicar datos, y confían en la destrucción de la pokédex para liberar cada pokemon.
+
+
+### Dificultades y soluciones
+
+**Mantener el menú genérico**
+
+Inicialmente los estilos y la tecla de cambio de estilo estaban dentro de menu.c, lo que rompía la genericidad.  Se corrigió moviendo los estilos a acciones_menu.c y haciendo que menu_mostrar reciba una función de impresión.  El menú dejó de decidir cómo se ve o que tecla cambia el estilo.
+
+
+**Compartir pokemon entre hash y ABB**
+
+Había riesgo de duplicar memoria y complicar la destrucción si cada TDA ocupaba la estructura.  Se resolvió haciendo que todos los TDAs almacenen punteros al mismo struct pokemon, y usando una única función destructora al destruir la pokédex.
