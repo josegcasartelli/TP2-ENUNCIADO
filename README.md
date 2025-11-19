@@ -359,14 +359,14 @@ La cola se implementa sobre la lista.  Se usa para almacenar las últimas 5 juga
 
 El TDA menu_t modela un menú genérico, independiente del tp2:
 Almacena:
-    - un titulo
-    - un arreglo de operaciones, cada una con tecla, texto y puntero a función
-    - un puntero void* contexto que se pasa a todas las acciones
+ - un titulo
+ - un arreglo de operaciones, cada una con tecla, texto y puntero a función
+ - un puntero void* contexto que se pasa a todas las acciones
 Operaciones:
-    - menu_crear() construye el menu copiando titulo y opciones, y guarda el contexto
-    - menu_mostrar() recorre las opciones y llama a un callback de dibujo.  El menú no decide cómo se imprime, eso queda fuera del TDA.
-    - menu_ejecutar() busca la opción cuya tecla coincide y ejecuta la acción asociada, devolviendo true o false según haya encontrado o no.
-    - menu_destruir() libera todos los recursos asociados
+ - menu_crear() construye el menu copiando titulo y opciones, y guarda el contexto
+ - menu_mostrar() recorre las opciones y llama a un callback de dibujo.  El menú no decide cómo se imprime, eso queda fuera del TDA.
+ - menu_ejecutar() busca la opción cuya tecla coincide y ejecuta la acción asociada, devolviendo true o false según haya encontrado o no.
+ - menu_destruir() libera todos los recursos asociados
 
 
 Con este diseño el menú es reutilizable.  No conoce estilos, ni teclas especiales, ni que se trata de pokemon.  Solo administra opciones y delega la presentación y la lógica a otros módulos.
@@ -376,9 +376,9 @@ Con este diseño el menú es reutilizable.  No conoce estilos, ni teclas especia
 
 
 pokedex_t: es la estructura "principal" sobre la que trabaja el TP2, pero a la vez funciona como un TDA compuesto, que agrupa otros TDAs:
-    - Un hash que usa como claves los nombres de los pokemon
-    - Un ABB ordenado por ID, usado para buscar por ID y mostrar por ID en orden creciente
-    - Un ABB ordenado por nombre, usado para mostrar ordenado alfabeticamente
+ - Un hash que usa como claves los nombres de los pokemon
+ - Un ABB ordenado por ID, usado para buscar por ID y mostrar por ID en orden creciente
+ - Un ABB ordenado por nombre, usado para mostrar ordenado alfabeticamente
 
 
 La pokédex no copia los pokemon, solo guarda punteros en cada TDA.  Al destruirla, primero destruye los ABB (sin liberar los pokemon) y finalmente destruye el hash con un destructor que libera el struct pokemon y su nombre.  De esa forma hay un único punto de destrucción y no se producen dobles free
