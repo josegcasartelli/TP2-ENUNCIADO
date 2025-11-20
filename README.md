@@ -9,32 +9,22 @@
 - Para compilar:
 
 ```bash
-línea de compilación
+make
 ```
 
 - Para ejecutar:
 
 ```bash
-línea de ejecución
+./pruebas_alumno
+./tp2
 ```
 
 - Para ejecutar con valgrind:
 ```bash
-línea con valgrind
+make valgrind-alumno
+make valgrind-tp2
 ```
 ---
-
-Explicación de cómo funcionan las estructuras desarrolladas en el TP y el funcionamiento general del mismo.
-
-Aclarar en esta parte todas las decisiones que se tomaron al realizar el TP, cosas que no se aclaren en el enunciado, fragmentos de código que necesiten explicación extra, etc.
-
-Incluir **EN TODOS LOS TPS** los diagramas relevantes al problema (mayormente diagramas de memoria para explicar las estructuras, pero se pueden utilizar otros diagramas si es necesario).
-
-
-<div align="center">
-<img width="70%" src="img/diagrama1.svg">
-</div>
-
 
 
 ## TP2 - Menú y juego de memoria pokemon
@@ -83,6 +73,11 @@ La pokédex es una estructura que combina varios TDA para lograr operaciones efi
 
 La pokédex, internamente, no copia el pokemon varias veces.  Todos los TDAs apuntan al mismo struct pokemon.  La destrucción final se hace desde el hash, liberando el pokemon y su nombre.
 
+<div align="center">
+<img width="70%" src="img/diagrama_pokedex.png">
+</div>
+
+
 ### Menu generico (menu_t)
 
 El menú está diseñado como un TDA genérico y reutilizable
@@ -105,6 +100,11 @@ Carateristicas:
 	- menu_ejecutar(menu, tecla)
 		Busca la opción con esa tecla y ejecuta su acción
 
+
+<div align="center">
+<img width="70%" src="img/diagrama_menu_t.png">
+</div>
+
 ### Juego de memoria
 
 El juego usa:
@@ -114,6 +114,14 @@ El juego usa:
 	- Un booleano eliminada para saber si ya se encontró la pareja
 - Un vector dinámico de jugadas (jugada_t) para el historial completo
 - Una cola de tamaño máximo 5 con las últimas 5 jugadas
+
+<div align="center">
+<img width="70%" src="img/diagrama_coleccion_pokemones_t.png">
+</div>
+
+<div align="center">
+<img width="70%" src="img/diagrama_carta_t.png">
+</div>
 
 Cada jugada guarda:
 - Jugador
@@ -182,7 +190,7 @@ muestra un mensaje y se vuelve al menú
 - Búsqueda por nombre:
 	- Se pide un sring
 	- Se llama a pokedex_buscar_por_nombre
-	- Interna,ente, esto usa el hash, que busca en tiempo O(1)
+	- Internamente, esto usa el hash, que busca en tiempo O(1)
 	- Se muestra la ficha completa del pokemon si existe sino un mensaje
 - Busqueda por ID:
 	- Se pide un número como texto y se convierte a entero
