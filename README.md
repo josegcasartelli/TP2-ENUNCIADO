@@ -101,10 +101,6 @@ Carateristicas:
 		Busca la opción con esa tecla y ejecuta su acción
 
 
-<div align="center">
-<img width="70%" src="img/diagrama_menu_t.png">
-</div>
-
 ### Juego de memoria
 
 El juego usa:
@@ -114,14 +110,6 @@ El juego usa:
 	- Un booleano eliminada para saber si ya se encontró la pareja
 - Un vector dinámico de jugadas (jugada_t) para el historial completo
 - Una cola de tamaño máximo 5 con las últimas 5 jugadas
-
-<div align="center">
-<img width="70%" src="img/diagrama_coleccion_pokemones_t.png">
-</div>
-
-<div align="center">
-<img width="70%" src="img/diagrama_carta_t.png">
-</div>
 
 Cada jugada guarda:
 - Jugador
@@ -379,6 +367,10 @@ Operaciones:
 
 Con este diseño el menú es reutilizable.  No conoce estilos, ni teclas especiales, ni que se trata de pokemon.  Solo administra opciones y delega la presentación y la lógica a otros módulos.
 
+<div align="center">
+<img width="70%" src="img/diagrama_menu_t.png">
+</div>
+
 
 ### Otras estructuras auxiliares
 
@@ -391,14 +383,27 @@ pokedex_t: es la estructura "principal" sobre la que trabaja el TP2, pero a la v
 
 La pokédex no copia los pokemon, solo guarda punteros en cada TDA.  Al destruirla, primero destruye los ABB (sin liberar los pokemon) y finalmente destruye el hash con un destructor que libera el struct pokemon y su nombre.  De esa forma hay un único punto de destrucción y no se producen dobles free
 
+**Diagrama de pokedex en estrcutruras principales - pokedex_t**
 
 carta_t: representa una carta del tablero. Guarda un puntero a struct pokemon y un booleano eliminado.  Las dos cartas de una misma pareja comparten el mismo puntero
+
+<div align="center">
+<img width="70%" src="img/diagrama_carta_t.png">
+</div>
 
 
 jugada_t: representa una jugada de un jugador (número de jugador, posiciones elegidas, punteros a los pokémon levantados y si fue acierto o fallo).  Se guarda en el vector de historial y en la cola de últimas jugadas.
 
+<div align="center">
+<img width="70%" src="img/diagrama_jugada_t.png">
+</div>
+
 
 coleccion_pokemones_t: estructura interna para acumular punteros a pokemon al recorrer la pokedex con el iterador interno.  Se usa solo durante la preparación del mazo y luego se libera.
+
+<div align="center">
+<img width="70%" src="img/diagrama_coleccion_pokemones_t.png">
+</div>
 
 
 En todos los casos, estas estructuras comparten punteros a struct pokémon con la pokédex, sin duplicar datos, y confían en la destrucción de la pokédex para liberar cada pokemon.

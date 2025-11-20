@@ -5,7 +5,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-
 int comparar_claves(const void *a, const void *b)
 {
 	const par_t *par1 = a;
@@ -44,8 +43,7 @@ bool rehash(hash_t *hash)
 	for (size_t i = 0; i < hash->capacidad; i++) {
 		lista_t *viejo_bucket = hash->tabla[i];
 		while (lista_cantidad(viejo_bucket) > 0) {
-			par_t *par = lista_eliminar_elemento(
-				viejo_bucket, 0);
+			par_t *par = lista_eliminar_elemento(viejo_bucket, 0);
 			size_t nuevo_indice =
 				funcion_hash(par->clave, nueva_capacidad);
 			if (!lista_agregar(nueva_tabla[nuevo_indice], par)) {
@@ -63,9 +61,6 @@ bool rehash(hash_t *hash)
 
 	return true;
 }
-
-
-
 
 hash_t *hash_crear(size_t capacidad_inicial)
 {

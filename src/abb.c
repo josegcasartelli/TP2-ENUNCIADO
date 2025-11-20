@@ -84,14 +84,13 @@ nodo_t *eliminar_nodo(nodo_t *nodo, void *dato,
 		if (*dato_eliminado == NULL)
 			*dato_eliminado = nodo->dato;
 
-		//caso 1, el nodo no tiene hijos
 		if (nodo->izq == NULL && nodo->der == NULL) {
 			*eliminado = true;
 			free(nodo);
 			return NULL;
 
 		}
-		//caso 2, el nodo tiene 1 hijo
+
 		else if (nodo->izq == NULL) {
 			nodo_t *temp = nodo;
 			nodo = nodo->der;
@@ -104,9 +103,7 @@ nodo_t *eliminar_nodo(nodo_t *nodo, void *dato,
 			free(temp);
 			*eliminado = true;
 
-		}
-		//caso 3, el nodo tiene 2 hijos
-		else {
+		} else {
 			nodo_t *predecesor = buscar_maximo(nodo->izq);
 			nodo->dato = predecesor->dato;
 			nodo->izq = eliminar_nodo(nodo->izq, predecesor->dato,
